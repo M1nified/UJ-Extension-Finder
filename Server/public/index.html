@@ -1,13 +1,75 @@
 <html>
 
 <head>
-  <title>Express</title>
+  <title>Extension finder</title>
   <link rel="stylesheet" href="/stylesheets/style.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
 </head>
 
 <body>
-  <h1>Express</h1>
-  <p>Welcome to Express</p>
+  <h1>Extension finder</h1>
+
+  <div class="card">
+    <div class="card-body">
+      <p class="card-title" style="font-weight: bold;">Add extension to database</p>
+      <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
+      <form class="add-ext-form">
+        <div class="card-text">
+          <div class="form-group input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1">.</span>
+            </div>
+            <input type="text" class="form-control add-ext" placeholder="Extension" aria-label="Extension"
+              aria-describedby="basic-addon1" name="extension">
+          </div>
+          <div class="form-group input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Description</span>
+            </div>
+            <textarea class="form-control" aria-label="With textarea" name="description"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary float-right">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text" id="basic-addon1">.</span>
+    </div>
+    <input type="text" class="form-control search-ext" placeholder="Extension" aria-label="Extension" aria-describedby="basic-addon1">
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary search-ext-btn" type="button" id="button-addon2">Search</button>
+    </div>
+  </div>
+
+  <div class="list-group result-list">
+
+  </div>
+
+  <template id="resultListItem">
+    <div class="list-group-item">
+      <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1 rl-title"></h5>
+        <!-- <small class="text-muted">3 days ago</small> -->
+      </div>
+      <p class="mb-1 rl-description"></p>
+    </div>
+  </template>
+
+  <script src="/javascripts/search.js"></script>
+  <script src="/javascripts/add.js"></script>
+
 </body>
 
 </html>

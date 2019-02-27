@@ -30,7 +30,7 @@ router.get('/extension', async function (req, res, next) {
         const sExt = req.query.sExt;
         const db = await dbInit.connect();
         const resultCursor = db.collection('extLib').find({
-            extension: new RegExp(`^${sExt}.*`)
+            extension: new RegExp(`^${sExt}.*`, 'i')
         });
         const results = [];
         while (await resultCursor.hasNext()) {
@@ -47,6 +47,36 @@ router.get('/extension', async function (req, res, next) {
 
     res.status(404);
     res.send();
+})
+
+router.post('/extension', async function (req, res, next) {
+    const extension = req.body;
+    if (!extension.hasOwnProperty('extension') || extension.extension == '') {
+        res.status(400);
+        res.send('Extension has to be provided.');
+        return;
+    }
+
+    if (!extension.hasOwnProperty('description') || extension.description == '') {
+        res.status(400);
+        res.send('Description has to be provided.');
+        return;
+    }
+
+    const db = await dbInit.connect();
+    try {
+
+        const insertResult = await db.collection('extLib').insertOne(extension);
+        const { insertedId } = insertResult;
+        res.status(201);
+        res.send(insertedId);
+
+    } catch (err) {
+        res.status(500);
+        res.send('Failed to store.');
+        return;
+    }
+
 })
 
 module.exports = router;

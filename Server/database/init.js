@@ -1,11 +1,11 @@
 const MongoClient = require('mongodb').MongoClient;
 
-let db = null;
+let db;
 
 async function connect() {
     console.log('connect')
     try {
-        if(db !== null && db.serverConfig.isConnected()){
+        if (typeof db !== 'undefined' && db.serverConfig.isConnected()) {
             return db;
         }
         const cli = await MongoClient.connect('mongodb://localhost:27017', {
