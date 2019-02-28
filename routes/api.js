@@ -1,27 +1,44 @@
 var express = require('express');
 /* GET home page. */
 const dbInit = require('./../database/init');
+const { ObjectID } = require('mongodb');
 
 var router = express.Router();
 
-router.get('/extension/:extension', async function (req, res, next) {
-    console.log("/extension/:extension");
+router.get('/extension/:extensionId', async function (req, res, next) {
+    console.log(`GET /extension/${req.params.extensionId}`);
     const db = await dbInit.connect();
-    const resultCursor = db.collection('extLib').find({
-        extension: req.params.extension.toString()
+    const result = await db.collection('extLib').findOne({
+        _id: new ObjectID(req.params.extensionId)
     })
 
-    if (!(await resultCursor.hasNext())) {
+    if (!result.hasOwnProperty('_id')) {
         res.status(404);
         console.error(404);
         res.send();
         return;
     }
 
-    const result = await resultCursor.next();
+    result.id = result._id;
     delete (result._id);
     res.send(result);
 });
+
+router.delete('/extension/:extensionId', async function (req, res, next) {
+    console.log(`DELETE /extension/${req.params.extensionId}`);
+    const db = await dbInit.connect();
+    const result = await db.collection('extLib').deleteOne({
+        _id: new ObjectID(req.params.extensionId)
+    })
+    console.log(result)
+    if (result.deletedCount === 0) {
+        res.status(404);
+        res.send();
+        return;
+    }
+    res.status(200);
+    res.send();
+})
 
 router.get('/extension', async function (req, res, next) {
     console.log('/extension');
@@ -35,6 +52,7 @@ router.get('/extension', async function (req, res, next) {
         const results = [];
         while (await resultCursor.hasNext()) {
             const elem = await resultCursor.next();
+            elem.id = elem._id;
             delete (elem._id);
             results.push(elem);
         }

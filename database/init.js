@@ -1,6 +1,7 @@
-const MongoClient = require('mongodb').MongoClient;
+const { MongoClient } = require('mongodb');
 
-const CONNECTION_STRING = process.env.MONGODB_URI;
+const CONNECTION_STRING = process.env.MONGODB_URI || 'mongodb://localhost:27017/ExtensionLibrary';
+console.log('CONNECTION_STRING', CONNECTION_STRING);
 
 let db;
 
@@ -14,7 +15,8 @@ async function connect() {
             useNewUrlParser: true
         })
         // db = cli.db('ExtensionLibrary');
-        db = cli.db('heroku_fr8n7d4z');
+        // db = cli.db('heroku_fr8n7d4z');
+        db = cli.db();
         console.log(db.extLib);
         console.log('CONNECTED');
         return db;
