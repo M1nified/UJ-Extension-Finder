@@ -15,7 +15,7 @@
 </head>
 
 <body>
-  <h1>Extension finder</h1>
+  <span class="h1">Extension finder</span class="h1">
 
   <div class="card">
     <div class="card-body">
@@ -44,7 +44,7 @@
 
   <hr>
 
-  <h2>Find extension</h2>
+  <span class="h2">Find extension</span>
 
   <div class="input-group mb-3">
     <div class="input-group-prepend">
@@ -60,10 +60,40 @@
 
   </div>
 
+  <div class="modal fade ext-editor" tabindex="-1" role="dialog" aria-labelledby="extEditorLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <form class="ext-editor-form">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="extEditorLabel">Edit extension</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="extensionId">
+            <div class="form-group">
+              <label for="recipient-name" class="col-form-label">Extension:</label>
+              <input type="text" class="form-control" name="extension">
+            </div>
+            <div class="form-group">
+              <label for="message-text" class="col-form-label">Description:</label>
+              <textarea class="form-control" name="description"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Dismiss</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <template id="resultListItem">
     <div class="list-group-item">
       <div class="d-flex w-100 justify-content-between">
-        <h5 class="mb-1 rl-title"></h5>
+        <span class="mb-1 rl-title h5"></span>
         <!-- <small class="text-muted">3 days ago</small> -->
         <div class="btn-group">
           <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true"
@@ -71,7 +101,7 @@
             Manage
           </button>
           <div class="dropdown-menu dropdown-menu-right">
-            <button class="dropdown-item rl-btn-edit">Edit</button>
+            <button class="dropdown-item rl-btn-edit" data-toggle="modal" data-target=".ext-editor">Edit</button>
             <button class="dropdown-item rl-btn-delete">Delete</button>
           </div>
         </div>

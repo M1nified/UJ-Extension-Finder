@@ -40,6 +40,63 @@ router.delete('/extension/:extensionId', async function (req, res, next) {
     res.send();
 })
 
+router.post('/extension/:extensionId', async function (req, res, next) {
+    console.log(`POST /extension/${req.params.extensionId}`);
+    const extension = req.body;
+
+    const db = await dbInit.connect();
+
+    try {
+
+        const updateResult = db.collection('extLib').findOneAndUpdate(
+            { _id: new ObjectID(req.params.extensionId) },
+            extension
+        )
+        res.status(200);
+        res.send();
+
+    } catch (e) {
+        res.status(500);
+        res.send('Failed to POST.');
+        return;
+    }
+})
+
+router.put('/extension/:extensionId', async function (req, res, next) {
+    console.log(`PUT /extension/${req.params.extensionId}`);
+    const extension = req.body;
+    console.log(extension);
+    if (!extension.hasOwnProperty('extension') || extension.extension == '') {
+        res.status(400);
+        res.send('Extension has to be provided.');
+        return;
+    }
+
+    if (!extension.hasOwnProperty('description') || extension.description == '') {
+        res.status(400);
+        res.send('Description has to be provided.');
+        return;
+    }
+
+    const db = await dbInit.connect();
+
+    try {
+
+        const replaceResult = await db.collection('extLib').findOneAndReplace(
+            { _id: new ObjectID(req.params.extensionId) },
+            extension
+        )
+        console.log('result', replaceResult);
+        res.status(200);
+        res.send();
+
+    } catch (e) {
+        res.status(500);
+        res.send('Failed to PUT.');
+        return;
+    }
+})
+
 router.get('/extension', async function (req, res, next) {
     console.log('/extension');
     console.log(req.query.sExt);

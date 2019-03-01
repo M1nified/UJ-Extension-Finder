@@ -2,9 +2,11 @@
 
 (function SEARCH_JS() {
 
-    const resultList = document.querySelector('.result-list');
-    const resultListItemTemplate = document.querySelector('#resultListItem');
-    const searchBox = document.querySelector('.search-ext');
+    const resultList = document.querySelector('.result-list'),
+        resultListItemTemplate = document.querySelector('#resultListItem'),
+        searchBox = document.querySelector('.search-ext'),
+        extEditor = document.querySelector('.ext-editor'),
+        extEditorForm = extEditor.querySelector('.ext-editor-form');
 
     function newResultListItem({ extension, description, id }) {
         const item = document.importNode(resultListItemTemplate.content, true);
@@ -17,6 +19,9 @@
         btnEdit.addEventListener('click', () => {
             console.log('edit', extension, id)
             console.log(typeof id, id)
+            extEditorForm.elements.extension.value = extension;
+            extEditorForm.elements.description.value = description;
+            extEditorForm.elements.extensionId.value = id;
         })
 
         const btnDelete = item.querySelector('.rl-btn-delete');
@@ -50,6 +55,20 @@
         return true;
     }
 
+    async function requestPut(extensionId, extensionObject) {
+        const result = await fetch(`/api/extension/${extensionId}`, {
+            method: 'PUT',
+            body: JSON.stringify(extensionObject),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        console.log(result);
+        if (result.status !== 200)
+            return false;
+        return true;
+    }
+
     function updateView(extensions) {
         resultList.innerHTML = ''; // im lazy
         extensions.forEach((extension) => {
@@ -73,6 +92,22 @@
     viewUpdateTrigger = () => {
         eventJob();
     }
+
+    extEditorForm.addEventListener('submit', async (evt) => {
+        evt.preventDefault();
+        const extensionId = extEditorForm.elements.extensionId.value;
+        const extensionObject = {
+            extension: extEditorForm.elements.extension.value,
+            description: extEditorForm.elements.description.value
+        }
+        const result = await requestPut(extensionId, extensionObject);
+        if (result === true) {
+            $(extEditor).modal('hide');
+            eventJob();
+        } else {
+            // error
+        }
+    })
 
 })();
 
