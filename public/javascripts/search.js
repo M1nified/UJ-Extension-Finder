@@ -38,6 +38,7 @@
         try {
             const result = await fetch(`/api/extension?sExt=${knownPart}`);
             const data = await result.json();
+            data.sort((a, b) => a.extension.toString().localeCompare(b.extension.toString()))
             return data;
         } catch (e) {
             console.error(e);
