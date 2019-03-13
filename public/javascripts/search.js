@@ -2,6 +2,8 @@
 
 (function SEARCH_JS() {
 
+    let token = null;
+
     const resultList = document.querySelector('.result-list'),
         resultListItemTemplate = document.querySelector('#resultListItem'),
         searchBox = document.querySelector('.search-ext'),
@@ -109,6 +111,79 @@
             // error
         }
     })
+
+    { // LOGIN
+
+        function updateLoggedStyles(state) {
+            const
+                loggedOns = document.querySelectorAll('.logged-on'),
+                loggedOffs = document.querySelectorAll('.logged-off');
+            if (!state) {
+                return () => {
+                    loggedOns.forEach(elem => elem.classList.add('d-none'));
+                    loggedOffs.forEach(elem => elem.classList.remove('d-none'));
+                }
+            }
+            return () => {
+                loggedOns.forEach(elem => elem.classList.remove('d-none'));
+                loggedOffs.forEach(elem => elem.classList.add('d-none'));
+            }
+        }
+
+        const
+            loginModal = document.querySelector('.login-modal'),
+            loginForm = document.querySelector('form.login-form'),
+            dispUserNameAll = document.querySelectorAll('.disp-userName');
+
+        async function fetchToken({ userName, password }) {
+            const result = await fetch(`/api/token`, {
+                method: 'POST',
+                body: JSON.stringify({ userName, password }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            if (result.status !== 200) {
+                return {
+                    error: true,
+                    status: result.status
+                };
+            }
+
+            const tokenJson = await result.json();
+            const { token } = tokenJson;
+            return {
+                token
+            }
+        }
+
+        function doDispUserName(userName) {
+            dispUserNameAll.forEach(span => {
+                span.textContent = userName;
+            })
+        }
+
+        loginForm.addEventListener('submit', async function (evt) {
+            evt.preventDefault();
+            const data = {
+                userName: loginForm.elements.userName.value,
+                password: loginForm.elements.password.value
+            };
+            const tokenObj = await fetchToken(data);
+            if (tokenObj.error) {
+                console.log('failed to login')
+                updateLoggedStyles(false)();
+                return;
+            }
+            doDispUserName(data.userName);
+            updateLoggedStyles(true)();
+            $(loginModal).modal('hide');
+            console.log(tokenObj)
+        })
+
+        updateLoggedStyles(false)();
+
+    }
 
 })();
 
