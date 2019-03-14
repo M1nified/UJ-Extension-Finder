@@ -1,10 +1,11 @@
 'use strict';
 
-(function SEARCH_JS() {
+(function () {
 
     let token = null;
 
-    const resultList = document.querySelector('.result-list'),
+    const
+        resultList = document.querySelector('.result-list'),
         resultListItemTemplate = document.querySelector('#resultListItem'),
         searchBox = document.querySelector('.search-ext'),
         extEditor = document.querySelector('.ext-editor'),
@@ -49,17 +50,19 @@
     }
 
     async function requestDelete(extensionId) {
-        const result = await fetch(`/api/extension/${extensionId}`, {
+        const result = await fetch(tokenize(`/api/extension/${extensionId}`), {
             method: 'DELETE'
         });
         if (result.status !== 200) {
+            alerts.danger()('Failed to delete.')
             return false;
         }
+        alerts.success()('Extension deleted.');
         return true;
     }
 
     async function requestPut(extensionId, extensionObject) {
-        const result = await fetch(`/api/extension/${extensionId}`, {
+        const result = await fetch(tokenize(`/api/extension/${extensionId}`), {
             method: 'PUT',
             body: JSON.stringify(extensionObject),
             headers: {
@@ -105,9 +108,11 @@
         }
         const result = await requestPut(extensionId, extensionObject);
         if (result === true) {
+            alerts.success()('Extension updated.');
             $(extEditor).modal('hide');
             eventJob();
         } else {
+            alerts.danger()('Failed to update.');
             // error
         }
     })
@@ -117,16 +122,26 @@
         function updateLoggedStyles(state) {
             const
                 loggedOns = document.querySelectorAll('.logged-on'),
-                loggedOffs = document.querySelectorAll('.logged-off');
+                loggedOffs = document.querySelectorAll('.logged-off'),
+                loggedEnabled = document.querySelectorAll('.logged-enabled');
             if (!state) {
                 return () => {
                     loggedOns.forEach(elem => elem.classList.add('d-none'));
                     loggedOffs.forEach(elem => elem.classList.remove('d-none'));
+                    loggedEnabled.forEach(elem => {
+                        elem.disabled = true;
+                        elem.classList.add('disabled')
+                    })
                 }
             }
             return () => {
                 loggedOns.forEach(elem => elem.classList.remove('d-none'));
                 loggedOffs.forEach(elem => elem.classList.add('d-none'));
+                loggedEnabled.forEach(elem => {
+                    elem.disabled = false;
+                    elem.classList.remove('disabled');
+
+                })
             }
         }
 
@@ -175,6 +190,7 @@
                 updateLoggedStyles(false)();
                 return;
             }
+            token = tokenObj.token;
             doDispUserName(data.userName);
             updateLoggedStyles(true)();
             $(loginModal).modal('hide');
@@ -184,6 +200,121 @@
         updateLoggedStyles(false)();
 
     }
+
+    { // ADD
+
+        const form = document.querySelector('form.add-ext-form');
+        const createModal = document.querySelector('div.create-modal');
+
+        function postExtension(extension) {
+            return new Promise((resolve, reject) => {
+                fetch(tokenize('/api/extension'), {
+                    method: 'POST',
+                    body: JSON.stringify(extension),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(async (res) => {
+                        console.log(res.status)
+                        if (res.status === 201)
+                            resolve(true);
+                        else {
+                            const reason = await res.text();
+                            reject({ status: res.status, reason });
+                        }
+                    })
+            })
+        }
+
+        form.addEventListener('submit', async function (evt) {
+            evt.preventDefault();
+            const extension = this.elements["extension"].value;
+            const description = this.elements["description"].value;
+            try {
+                const result = await postExtension({ extension, description });
+                console.log(result);
+                if (result === true) {
+                    $(createModal).modal('hide');
+                    this.elements["extension"].value = '';
+                    this.elements["description"].value = '';
+                    alerts.success()('Extension created.');
+                }
+            } catch (e) {
+                alerts.danger()('Failed to create.')
+            }
+            eventJob();
+        })
+
+    }
+
+    function tokenize(path) {
+        const url = new URL(path, document.location.href);
+        url.searchParams.append('token', token);
+        return url.href;
+    }
+
+    const alerts = (function () {
+        const alertsBox = document.querySelector('.alerts');
+        const
+            alerts = [],
+            limit = 3,
+            lifeTime = 1500;
+        const Alert = class {
+            constructor(element) {
+                this.element = element;
+                this.runTimer();
+            }
+            runTimer() {
+                this.timer = setTimeout(() => {
+                    this.remove();
+                }, lifeTime);
+            }
+            remove() {
+                try {
+                    this.element.parentNode.removeChild(this.element);
+                } catch (e) {
+
+                }
+            }
+        }
+        const templates = {
+            alertPrimary: document.getElementById('alert-primary'),
+            alertSecondary: document.getElementById('alert-secondary'),
+            alertSuccess: document.getElementById('alert-success'),
+            alertDanger: document.getElementById('alert-danger'),
+            alertWarning: document.getElementById('alert-warning'),
+            alertInfo: document.getElementById('alert-info'),
+            alertLight: document.getElementById('alert-light'),
+            alertDark: document.getElementById('alert-dark'),
+        }
+        function addAlert(alert) {
+            if (alerts.length >= limit) {
+                const fst = alerts.shift();
+                console.log(fst)
+                fst.remove();
+            }
+            alerts.push(alert);
+            alertsBox.appendChild(alert.element);
+        }
+        function alertContent(template) {
+            const element = document.importNode(template.content, true).querySelector('.alert');
+            return (info) => {
+                console.log(info, element)
+                element.appendChild(document.createTextNode(info || ''));
+                const alert = new Alert(element);
+                addAlert(alert);
+            }
+        }
+        return {
+            success: () => {
+                return alertContent(templates.alertSuccess);
+            },
+            danger: () => {
+                return alertContent(templates.alertDanger);
+            }
+        }
+    })()
 
 })();
 

@@ -153,6 +153,7 @@ router.post('/extension', async function (req, res, next) {
     const db = await dbInit.connect();
     try {
 
+        extension.creator = user._id;
         const insertResult = await db.collection('extLib').insertOne(extension);
         const { insertedId } = insertResult;
         res.status(201);
@@ -212,6 +213,22 @@ router.post('/token', async function (req, res, next) {
         return;
     }
 
+})
+
+router.get('/user/:userId', async function (req, res, next) {
+    console.log(`GET /user/${req.params.userId}`);
+    const db = await dbInit.connect();
+    const result = await db.collection('users').findOne({ _id: new ObjectID(req.params.userId) });
+
+    if (!result.hasOwnProperty('_id')) {
+        res.status(404);
+        res.send();
+        return;
+    }
+
+    result.id = result._id;
+    delete (result._id);
+    res.send(result);
 })
 
 async function getUserForToken(token) {
