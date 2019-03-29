@@ -3,6 +3,7 @@
 (function () {
 
     let token = null;
+    let userLoggerIn = false;
 
     const
         resultList = document.querySelector('.result-list'),
@@ -19,17 +20,27 @@
         descriptionElem.appendChild(document.createTextNode(description));
 
         const btnEdit = item.querySelector('.rl-btn-edit');
-        btnEdit.addEventListener('click', () => {
-            console.log('edit', extension, id)
-            console.log(typeof id, id)
+        btnEdit.addEventListener('click', (evt) => {
+            if (!userLoggerIn) {
+                evt.preventDefault();
+                alerts.danger()('You need to be logged in to edit extensions');
+                return;
+            }
+            console.log('edit', extension, id);
             extEditorForm.elements.extension.value = extension;
             extEditorForm.elements.description.value = description;
             extEditorForm.elements.extensionId.value = id;
+            $('.ext-editor').modal('show');
         })
 
         const btnDelete = item.querySelector('.rl-btn-delete');
-        btnDelete.addEventListener('click', async () => {
-            console.log('delete', extension, id)
+        btnDelete.addEventListener('click', async (evt) => {
+            if (!userLoggerIn) {
+                evt.preventDefault();
+                alerts.danger()('You need to be logged in to delete extensions');
+                return;
+            }
+            console.log('delete', extension, id);
             await requestDelete(id);
             eventJob();
         })
@@ -194,6 +205,8 @@
             doDispUserName(data.userName);
             updateLoggedStyles(true)();
             $(loginModal).modal('hide');
+            alerts.success()('You have successfully logged in :)');
+            userLoggerIn = true;
             console.log(tokenObj)
         })
 
@@ -259,7 +272,7 @@
         const
             alerts = [],
             limit = 3,
-            lifeTime = 1500;
+            lifeTime = 2500;
         const Alert = class {
             constructor(element) {
                 this.element = element;
