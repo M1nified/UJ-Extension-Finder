@@ -47,7 +47,7 @@ export default class ExtensionElement extends React.Component {
 
     render() {
         return (
-            <Card style={{ minHeight: "220px" }}>
+            <Card style={{ minHeight: "220px" }} className="extension">
                 <CardActionArea>
                     <CardHeader title={this.state.extension} />
                     <CardContent>

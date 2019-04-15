@@ -98,7 +98,7 @@ class App extends Component {
       <div className="App">
         <Paper className="paper-main">
           <Typography variant="h4" component="h2">
-            Filter extensions
+            Extension finder
           </Typography>
           <TextField fullWidth label="Filer" value={this.state.filter} onChange={this.handleFilter}></TextField>
         </Paper>
