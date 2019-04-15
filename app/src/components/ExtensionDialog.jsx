@@ -66,7 +66,7 @@ export default class ExtensionElement extends React.Component {
                         id="edit_dialog-extension"
                         type="text"
                         fullWidth
-                        value={!isAdd && this.state.extension.extension}
+                        defaultValue={!isAdd ? this.state.extension.extension : ''}
                     />
                     <TextField
                         margin="dense"
@@ -74,7 +74,7 @@ export default class ExtensionElement extends React.Component {
                         label="Description"
                         type="textarea"
                         fullWidth
-                        value={!isAdd && this.state.extension.description}
+                        defaultValue={!isAdd ?this.state.extension.description : ''}
                     />
                 </DialogContent>
                 <DialogActions>

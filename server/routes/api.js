@@ -70,8 +70,8 @@ router.post('/extension/:extensionId', async function (req, res, next) {
 
 router.put('/extension/:extensionId', async function (req, res, next) {
     console.log(`PUT /extension/${req.params.extensionId}`);
-    const user = await validateToken(req, res);
-    if (!user) return;
+    // const user = await validateToken(req, res);
+    // if (!user) return;
 
     const extension = req.body;
     console.log(extension);
@@ -88,6 +88,9 @@ router.put('/extension/:extensionId', async function (req, res, next) {
     }
 
     const db = await dbInit.connect();
+
+    delete extension.id;
+    // extension._id = req.params.extensionId;
 
     try {
 

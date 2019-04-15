@@ -15,7 +15,16 @@ function extension() {
     }
 
     const update = async (extension) => {
-        throw "Not implemented"
+        const extensionId = extension.id;
+        console.log(`${BASE_API_URL}/extension/${extensionId}`)
+        const result = await fetch(`${BASE_API_URL}/extension/${extensionId}`, {
+            method: 'PUT',
+            body: JSON.stringify(extension),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        return result.ok;
     }
 
     const create = async (extension) => {

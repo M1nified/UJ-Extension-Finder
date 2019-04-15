@@ -31,6 +31,10 @@ export default class ExtensionElement extends React.Component {
 
     }
 
+    componentWillReceiveProps({ extension }) {
+        this.setState({ ...extension, extensionObject: extension });
+    }
+
     handleDelete() {
         console.log('delete')
         this.state.onDeleteBtn(this.state.id)
