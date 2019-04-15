@@ -26,9 +26,9 @@ export default class ExtensionElement extends React.Component {
 
     }
 
-    componentWillReceiveProps({ open }) {
-        console.log(open)
-        this.setState({ open })
+    componentWillReceiveProps(props) {
+        console.log(props)
+        this.setState(props)
     }
 
     handleCancel() {
@@ -38,12 +38,20 @@ export default class ExtensionElement extends React.Component {
         })
     }
 
-    handleSubmit() {
-
+    handleSubmit(evt) {
+        // poor programming skillz shown below:
+        const
+            extension = document.querySelector("#edit_dialog-extension").value,
+            description = document.querySelector("#edit_dialog-description").value
+        this.state.onSave({ ...this.state.extension, extension, description })
+        this.setState({
+            open: false,
+            extension: null
+        })
     }
 
     render() {
-        const isAdd = !this.extension || !this.extension.hasOwnProperty('extension');
+        const isAdd = !this.state.extension || !this.state.extension.hasOwnProperty('extension');
         return (
             <Dialog open={this.state.open}>
                 <DialogTitle>
@@ -58,6 +66,7 @@ export default class ExtensionElement extends React.Component {
                         id="edit_dialog-extension"
                         type="text"
                         fullWidth
+                        value={!isAdd && this.state.extension.extension}
                     />
                     <TextField
                         margin="dense"
@@ -65,6 +74,7 @@ export default class ExtensionElement extends React.Component {
                         label="Description"
                         type="textarea"
                         fullWidth
+                        value={!isAdd && this.state.extension.description}
                     />
                 </DialogContent>
                 <DialogActions>

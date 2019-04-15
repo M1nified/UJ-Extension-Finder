@@ -29,12 +29,20 @@ class App extends Component {
     }
 
     this.handleFilter = this.handleFilter.bind(this)
-    this.handleAdd = this.handleAdd.bind(this)
+    this.handleAddBtn = this.handleAddBtn.bind(this)
+    this.handleEditBtn = this.handleEditBtn.bind(this)
+    this.handleDeleteBtn = this.handleDeleteBtn.bind(this)
     this.handleExtensionSave = this.handleExtensionSave.bind(this)
+
+    this.updateExtensionsFromServer = this.updateExtensionsFromServer.bind(this)
 
   }
 
   async componentDidMount() {
+    return this.updateExtensionsFromServer();
+  }
+
+  async updateExtensionsFromServer() {
     const extensions = await Api.extension().findByName('');
     this.setState({
       extensions
@@ -48,14 +56,34 @@ class App extends Component {
     })
   }
 
-  handleAdd(evt) {
+  handleAddBtn(evt) {
     this.setState({
       extensionToEdit: {}
     })
   }
 
-  handleExtensionSave(evt) {
+  handleEditBtn(extension) {
+    console.log(extension)
+    this.setState({
+      extensionToEdit: extension
+    })
+  }
 
+  async handleDeleteBtn(extensionId) {
+    console.log(extensionId)
+    await Api.extension().remove(extensionId)
+    await this.updateExtensionsFromServer()
+  }
+
+  async handleExtensionSave(extension) {
+    console.log(extension)
+    this.setState({ extensionToEdit: null })
+    if (extension.id) {
+      await Api.extension().update(extension)
+    } else {
+      await Api.extension().create(extension)
+    }
+    await this.updateExtensionsFromServer()
   }
 
   render() {
@@ -63,7 +91,7 @@ class App extends Component {
     const extensions = this.state.extensions
       .filter(({ extension }) => filterRegExp.test(extension))
       .map((ext, id) => <Grid item xs={3} key={ext.id}>
-        <ExtensionElement extension={ext} />
+        <ExtensionElement extension={ext} onEditBtn={this.handleEditBtn} onDeleteBtn={this.handleDeleteBtn} />
       </Grid>
       )
     return (
@@ -79,7 +107,7 @@ class App extends Component {
             {extensions}
           </Grid>
         </Paper>
-        <Fab color="secondary" style={{ position: 'fixed', bottom: '1em', right: '1em' }} onClick={this.handleAdd}>
+        <Fab color="secondary" style={{ position: 'fixed', bottom: '1em', right: '1em' }} onClick={this.handleAddBtn}>
           <AddIcon />
         </Fab>
         <ExtensionDialog extension={this.state.extensionToEdit} onSave={this.handleExtensionSave} open={!!this.state.extensionToEdit} />

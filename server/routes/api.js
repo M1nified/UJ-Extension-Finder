@@ -27,8 +27,8 @@ router.get('/extension/:extensionId', async function (req, res, next) {
 
 router.delete('/extension/:extensionId', async function (req, res, next) {
     console.log(`DELETE /extension/${req.params.extensionId}`);
-    const user = await validateToken(req, res);
-    if (!user) return;
+    // const user = await validateToken(req, res);
+    // if (!user) return;
     const db = await dbInit.connect();
     const result = await db.collection('extLib').deleteOne({
         _id: new ObjectID(req.params.extensionId)
@@ -134,8 +134,8 @@ router.get('/extension', async function (req, res, next) {
 })
 
 router.post('/extension', async function (req, res, next) {
-    const user = await validateToken(req, res);
-    if (!user) return;
+    // const user = await validateToken(req, res);
+    // if (!user) return;
 
     const extension = req.body;
     if (!extension.hasOwnProperty('extension') || extension.extension == '') {
@@ -153,7 +153,8 @@ router.post('/extension', async function (req, res, next) {
     const db = await dbInit.connect();
     try {
 
-        extension.creator = user._id;
+        // extension.creator = user._id;
+        extension.creator = null;
         const insertResult = await db.collection('extLib').insertOne(extension);
         const { insertedId } = insertResult;
         res.status(201);
